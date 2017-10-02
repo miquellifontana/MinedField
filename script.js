@@ -1,5 +1,8 @@
-var field[][];
+var field;
 var processingQueue = [];
+var fieldLines = 10;
+var fieldColumns = 10;
+var totalBombs = 10;
 
 function Slot() {
     this.isBomb = false;
@@ -65,7 +68,7 @@ function drawField(){
 
 function onSlotClicked(i, j) {
 
-  Slot clickedSlot = field[i][j];
+  var clickedSlot = field[i][j];
 
   if (clickedSlot.isBomb) {
     youLose();
@@ -80,7 +83,7 @@ function onSlotClicked(i, j) {
 
 function processQueue() {
 
-  Slot currentPosition = processingQueue.pop();
+  var currentPosition = processingQueue.pop();
 
   if (currentPosition) {
     if (!currentPosition.isBomb) {
@@ -88,7 +91,7 @@ function processQueue() {
         if (!(currentPosition.numberOfBombsInNeighborhood > 0)) {
           var unprocessedNeighboors = getUnprocessedNeighboors(currentPosition.x, currentPosition.y);
           for (var i = 0; i < unprocessedNeighboors.length; i++) {
-            Slot current = unprocessedNeighboors[i];
+            var current = unprocessedNeighboors[i];
             current.processed = true;
             processingQueue.push(current);
           }
@@ -111,7 +114,7 @@ function getUnprocessedNeighboors(i, j) {
   var unprocessedNeighboors = [];
 
   for (var i = 0; i < neighboors.length; i++) {
-    Slot current = neighboors[i];
+    var current = neighboors[i];
     if (!current.processed) {
       unprocessedNeighboors.push(current);
     }
@@ -124,7 +127,7 @@ function numberOfBombsInNeighborhood(i, j) {
   var neighboors = getNeighboors(i, j);
   var bombsAround = 0;
   for (var i = 0; i < neighboors.length; i++) {
-    var Slot position = neighbors[i];
+    var position = neighbors[i];
     if (position.isBomb) {
       bombsAround ++;
     }
@@ -137,14 +140,14 @@ function getNeighboors(i, j) {
 
     var neighboors = [];
 
-    Slot upperLeft = field[i-1][j-1];
-    Slot upper = i, j-1
-    Slot upperRight = i+1, j-1
-    Slot left = i-1, j
-    Slot right = i+1, j
-    Slot underLeft = i-1, j+1
-    Slot under = i, j+1
-    Slot underRight = i+1, j+1
+    var upperLeft = field[i-1][j-1];
+    var upper = [i][j-1];
+    var upperRight = [i+1][j-1];
+    var left = [i-1][j];
+    var right = [i+1][j];
+    var underLeft = [i-1][j+1];
+    var under = [i][j+1];
+    var underRight = [i+1][j+1];
 
     if (upperLeft) {
       neighboors.push(upperLeft);
