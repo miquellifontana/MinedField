@@ -8,6 +8,15 @@
   background-color: #81D4FA;
 }
 
+#tableField td.openSlot{
+  background-color: #a5a5a5;
+}
+
+#tableField td.openBomb{
+  /*background-image: ;*/
+  background-color: #ff0000;
+}
+
 tr {
   height: 40px;
 }
