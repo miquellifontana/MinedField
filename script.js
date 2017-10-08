@@ -6,25 +6,25 @@ var totalBombs = 10;
 var showBombsMode = false;
 
 function Slot() {
-    this.isBomb = false;
-    this.isOpen = false;
-    this.processed = false;
-    this.bombsAround = 0;
-    this.y = null;
-    this.x = null;
+  this.isBomb = false;
+  this.isOpen = false;
+  this.processed = false;
+  this.bombsAround = 0;
+  this.y = null;
+  this.x = null;
 }
 
-function reloadGame(){
-    field = new Array(fieldLines);
-    fillField();
-    setBombs();
-    drawField();
+function reloadGame() {
+  field = new Array(fieldLines);
+  fillField();
+  setBombs();
+  drawField();
 }
 
 /**
  * Popula a matriz do tabuleiro
  */
-function fillField(){
+function fillField() {
   for (var i = 0; i < fieldLines; i++) {
     field[i] = new Array(fieldColumns);
 
@@ -42,22 +42,22 @@ function fillField(){
 /**
  * Insere as bombas no tabuleiro
  */
-function setBombs(){
+function setBombs() {
   var bombsSetted = 0;
 
-  while (bombsSetted < totalBombs){
+  while (bombsSetted < totalBombs) {
     var i = getRandomPosition(fieldLines);
     var j = getRandomPosition(fieldColumns);
     var slot = field[i][j];
 
-    if (!slot.isBomb){
+    if (!slot.isBomb) {
       slot.isBomb = true;
       bombsSetted++;
     }
   }
 
   for (var i = 0; i < 10; i++) {
-    if (bombsSetted < totalBombs){
+    if (bombsSetted < totalBombs) {
       var bomb = new Slot();
       bomb.isBomb = true;
       field[i][i] = bomb;
@@ -68,14 +68,14 @@ function setBombs(){
 /**
  * Retorna um número aleatório valido para ser uma das posições de uma Bomba na Matriz do campo.
  */
-function getRandomPosition(maxElementsFromMatrix){
+function getRandomPosition(maxElementsFromMatrix) {
   var maxPosition = maxElementsFromMatrix - 1;
   var position = (Math.random() * (maxPosition)) + 1;
 
-  if (position > maxPosition){
+  if (position > maxPosition) {
     position = maxPosition;
   }
-  if (position < 1){
+  if (position < 1) {
     position = 0;
   }
 
@@ -84,7 +84,7 @@ function getRandomPosition(maxElementsFromMatrix){
 /**
  * Desenha do tabuleiro a partir da matriz
  */
-function drawField(){
+function drawField() {
   var tableField = document.getElementById("bodyTableField");
   tableField.innerHTML = "";
 
@@ -96,20 +96,19 @@ function drawField(){
       var cell = row.insertCell(j);
       cell.setAttribute("onclick", "onSlotClicked(" + i + ", " + j + ")");
 
-      if (slot != null ){
+      if (slot != null) {
         if (slot.processed) {
           if (slot.bombsAround > 0) {
             cell.innerHTML = slot.bombsAround;
           }
         }
 
-        if (slot.isOpen){
-          if (slot.isBomb){
+        if (slot.isOpen) {
+          if (slot.isBomb) {
             cell.innerHTML = "Bomb";
-            cell.className="openBomb"
-          }
-          else if (!showBombsMode){
-            cell.className="openSlot"
+            cell.className = "openBomb"
+          } else if (!showBombsMode) {
+            cell.className = "openSlot"
           }
         }
       }
@@ -124,8 +123,7 @@ function onSlotClicked(i, j) {
   if (clickedSlot.isBomb) {
     youLose();
     showBombs();
-  }
-  else {
+  } else {
     processSlot(i, j);
     if (allFieldsProcessed()) {
       alert("You win");
@@ -149,18 +147,18 @@ function processQueue() {
 
   if (currentPosition) {
     if (!currentPosition.isBomb) {
-        currentPosition.bombsAround = numberOfBombsInNeighborhood(currentPosition.x, currentPosition.y);
-        if (currentPosition.bombsAround == 0) {
-          //alert("sem bombas em volta");
-          var unprocessedNeighboors = getUnprocessedNeighboors(currentPosition.x, currentPosition.y);
-          //alert(unprocessedNeighboors);
-          for (var i = 0; i < unprocessedNeighboors.length; i++) {
-            var current = unprocessedNeighboors[i];
-            current.processed = true;
-                      current.isOpen = true;
-            processingQueue.push(current);
-          }
+      currentPosition.bombsAround = numberOfBombsInNeighborhood(currentPosition.x, currentPosition.y);
+      if (currentPosition.bombsAround == 0) {
+        //alert("sem bombas em volta");
+        var unprocessedNeighboors = getUnprocessedNeighboors(currentPosition.x, currentPosition.y);
+        //alert(unprocessedNeighboors);
+        for (var i = 0; i < unprocessedNeighboors.length; i++) {
+          var current = unprocessedNeighboors[i];
+          current.processed = true;
+          current.isOpen = true;
+          processingQueue.push(current);
         }
+      }
     }
 
     // alert(processingQueue);
@@ -209,7 +207,7 @@ function numberOfBombsInNeighborhood(i, j) {
   for (var i = 0; i < neighboors.length; i++) {
     var position = neighboors[i];
     if (position.isBomb) {
-      bombsAround ++;
+      bombsAround++;
     }
   }
 
@@ -220,58 +218,57 @@ function getElementAtPosition(i, j) {
 
   if (i >= 0 && j >= 0 && i < fieldColumns && j < fieldLines) {
     return field[i][j];
-  }
-  else {
+  } else {
     return;
   }
 }
 
 function getNeighboors(i, j) {
 
-    var neighboors = [];
+  var neighboors = [];
 
-    var upperLeft = getElementAtPosition(i-1, j-1)
-    var upper = getElementAtPosition(i, j-1);
-    var upperRight = getElementAtPosition(i+1, j-1);
-    var left = getElementAtPosition(i-1, j);
-    var right = getElementAtPosition(i+1, j);
-    var underLeft = getElementAtPosition(i-1, j+1);
-    var under = getElementAtPosition(i, j+1);
-    var underRight = getElementAtPosition(i+1, j+1);
+  var upperLeft = getElementAtPosition(i - 1, j - 1)
+  var upper = getElementAtPosition(i, j - 1);
+  var upperRight = getElementAtPosition(i + 1, j - 1);
+  var left = getElementAtPosition(i - 1, j);
+  var right = getElementAtPosition(i + 1, j);
+  var underLeft = getElementAtPosition(i - 1, j + 1);
+  var under = getElementAtPosition(i, j + 1);
+  var underRight = getElementAtPosition(i + 1, j + 1);
 
-    if (upperLeft) {
-      neighboors.push(upperLeft);
-    }
+  if (upperLeft) {
+    neighboors.push(upperLeft);
+  }
 
-    if (upper) {
-      neighboors.push(upper);
-    }
+  if (upper) {
+    neighboors.push(upper);
+  }
 
-    if (upperRight) {
-      neighboors.push(upperRight);
-    }
+  if (upperRight) {
+    neighboors.push(upperRight);
+  }
 
-    if (left) {
-      neighboors.push(left);
-    }
+  if (left) {
+    neighboors.push(left);
+  }
 
-    if (right) {
-      neighboors.push(right);
-    }
+  if (right) {
+    neighboors.push(right);
+  }
 
-    if (underLeft) {
-      neighboors.push(underLeft);
-    }
+  if (underLeft) {
+    neighboors.push(underLeft);
+  }
 
-    if (under) {
-      neighboors.push(under);
-    }
+  if (under) {
+    neighboors.push(under);
+  }
 
-    if (underRight) {
-      neighboors.push(underRight);
-    }
+  if (underRight) {
+    neighboors.push(underRight);
+  }
 
-    return neighboors;
+  return neighboors;
 }
 
 function showBombs() {
