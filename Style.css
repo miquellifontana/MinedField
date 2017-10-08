@@ -7,3 +7,11 @@
 #tableField td:hover{
   background-color: #81D4FA;
 }
+
+tr {
+  height: 40px;
+}
+
+td {
+  width: 40px;
+}

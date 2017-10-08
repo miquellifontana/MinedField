@@ -1,6 +1,6 @@
 var field;
 var processingQueue = [];
-var fieldLines = 10;
+var fieldLines = 1;
 var fieldColumns = 10;
 var totalBombs = 10;
 
@@ -31,8 +31,23 @@ function setBombs(){
       var bomb = new Slot();
       bomb.isBomb = true;
       field[i][i] = bomb;
+
+      field[i][6] = bomb;
     }
 
+  }
+
+  for (var i = 0; i < fieldLines; i++) {
+    for (var j = 0; j < fieldColumns; j++) {
+      var slot = field[i][j];
+      if (!slot) {
+        slot = new Slot();
+        slot.isBomb = false;
+        field[i][j] = slot;
+      }
+      slot.x = i;
+      slot.y = j;
+    }
   }
   // while(bombsSetted < bombs){
   //
@@ -60,7 +75,14 @@ function drawField(){
       var cell = row.insertCell(j);
       cell.setAttribute("onclick", "onSlotClicked(" + i + ", " + j + ")");
       if (slot != null ){
-        cell.innerHTML =slot.isBomb;
+        if (slot.processed) {
+          if (slot.bombsAround > 0) {
+            cell.innerHTML = slot.bombsAround;
+          }
+          else if (slot.isBomb){
+            cell.innerHTML = "Bomb";
+          }
+        }
       }
     }
   }
@@ -69,15 +91,24 @@ function drawField(){
 function onSlotClicked(i, j) {
 
   var clickedSlot = field[i][j];
-
   if (clickedSlot.isBomb) {
     youLose();
+    showBombs();
   }
   else {
-    if (!clickedSlot.processed) {
-      processingQueue.push(clickedSlot);
-      processQueue();
+    processSlot(i, j);
+    if (allFieldsProcessed()) {
+      alert("You win");
     }
+  }
+}
+
+function processSlot(i, j) {
+  var clickedSlot = field[i][j];
+  if (!clickedSlot.processed) {
+    clickedSlot.processed = true;
+    processingQueue.push(clickedSlot);
+    processQueue();
   }
 }
 
@@ -87,9 +118,11 @@ function processQueue() {
 
   if (currentPosition) {
     if (!currentPosition.isBomb) {
-        currentPosition.numberOfBombsInNeighborhood = numberOfBombsInNeighborhood(currentPosition.x, currentPosition.y);
-        if (!(currentPosition.numberOfBombsInNeighborhood > 0)) {
+        currentPosition.bombsAround = numberOfBombsInNeighborhood(currentPosition.x, currentPosition.y);
+        if (currentPosition.bombsAround == 0) {
+          alert("sem bombas em volta");
           var unprocessedNeighboors = getUnprocessedNeighboors(currentPosition.x, currentPosition.y);
+          alert(unprocessedNeighboors);
           for (var i = 0; i < unprocessedNeighboors.length; i++) {
             var current = unprocessedNeighboors[i];
             current.processed = true;
@@ -98,11 +131,23 @@ function processQueue() {
         }
     }
 
+    // alert(processingQueue);
+    drawField();
     processQueue();
   }
-  else {
-    return;
+  return;
+}
+
+function allFieldsProcessed() {
+  for (var i = 0; i < fieldLines; i++) {
+    for (var j = 0; j < fieldColumns; j++) {
+      var slot = field[i][j];
+      if (!slot.processed && !slot.isBomb) {
+        return false;
+      }
+    }
   }
+  return true;
 }
 
 function youLose() {
@@ -125,9 +170,12 @@ function getUnprocessedNeighboors(i, j) {
 
 function numberOfBombsInNeighborhood(i, j) {
   var neighboors = getNeighboors(i, j);
+  for (var i = 0; i < neighboors.length; i++) {
+    var slot = neighboors[i];
+  }
   var bombsAround = 0;
   for (var i = 0; i < neighboors.length; i++) {
-    var position = neighbors[i];
+    var position = neighboors[i];
     if (position.isBomb) {
       bombsAround ++;
     }
@@ -136,18 +184,30 @@ function numberOfBombsInNeighborhood(i, j) {
   return bombsAround;
 }
 
+function getElementAtPosition(i, j) {
+
+  if (i >= 0 && j >= 0 && i < fieldColumns && j < fieldLines) {
+    alert("Tem elemento");
+    return field[i][j];
+  }
+  else {
+    alert("Nao tem elemento i:" + i + " j:" + j);
+    return;
+  }
+}
+
 function getNeighboors(i, j) {
 
     var neighboors = [];
 
-    var upperLeft = field[i-1][j-1];
-    var upper = [i][j-1];
-    var upperRight = [i+1][j-1];
-    var left = [i-1][j];
-    var right = [i+1][j];
-    var underLeft = [i-1][j+1];
-    var under = [i][j+1];
-    var underRight = [i+1][j+1];
+    var upperLeft = getElementAtPosition(i-1, j-1)
+    var upper = getElementAtPosition(i, j-1);
+    var upperRight = getElementAtPosition(i+1, j-1);
+    var left = getElementAtPosition(i-1, j);
+    var right = getElementAtPosition(i+1, j);
+    var underLeft = getElementAtPosition(i-1, j+1);
+    var under = getElementAtPosition(i, j+1);
+    var underRight = getElementAtPosition(i+1, j+1);
 
     if (upperLeft) {
       neighboors.push(upperLeft);
@@ -182,4 +242,15 @@ function getNeighboors(i, j) {
     }
 
     return neighboors;
+}
+
+function showBombs() {
+  for (var i = 0; i < fieldLines; i++) {
+    for (var j = 0; j < fieldColumns; j++) {
+      var slot = field[i][j];
+      if (!slot.processed) {
+        processSlot(i, j);
+      }
+    }
+  }
 }
