@@ -2,6 +2,8 @@
   border: 2px solid #01579B;
   margin: 0px;
   padding: 0px;
+  height: 40px;
+  width: 40px;
 }
 
 #tableField td:hover{
@@ -17,10 +19,33 @@
   background-color: #ff0000;
 }
 
+#tableHistory{
+  margin-top: 20px;
+  background-color: #fff;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  width: 100%;
+}
+/*
+#tableHistory tr:nth-child(even) {
+  background-color: #f2f2f2
+}*/
+#tableHistory th {
+  text-align: center;
+  font-weight: bold;
+}
+
+#tableHistory th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+/*
 tr {
   height: 40px;
 }
 
 td {
   width: 40px;
-}
+}*/

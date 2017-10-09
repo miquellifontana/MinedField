@@ -1,32 +1,50 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="Style.css" />
-    <script src="script.js"></script>
-    <title></title>
-  </head>
+   <head>
+      <meta charset="UTF-8">
+      <link rel="stylesheet" type="text/css" href="Style.css" />
+      <script src="script.js"></script>
+      <title>Mined Field</title>
+   </head>
+   <body>
+      <header>
+      </header>
+      <div id="infos">
+         <form id="form_info">
+            Linhas: <input type="number" name="lines" value="10"/>
+            Colunas: <input type="number" name="columns" value="10"/>
+            Quantidade de Bombas: <input type="number" name="bombs" value="20"/><br>
+            Seu Nome: <input type="text" name="player" value="Jogador 1"/>
+         </form>
+      </div>
 
-  <body onLoad="reloadGame()">
-    <header>
-    </header>
-    <div id="infos">
-      <form>
-        <input type="text"> Largura: </input>
-        <input type="text"> Altura: </input>
-        <input type="text"> Seu nome: </input>
-        <input type="text"> Quantidade de bombas: </input>
-      </form>
-    </div>
+      <div id="buttons">
+         <button onclick="reloadGame()">Jogar</button>
+         <button onclick="showBombs()">Mostrar Bombas</button>
+      </div>
 
-    <button onclick="showBombs()">Mostrar Bombas</button>
+      <div class="field">
+         <table id="tableField">
+            <tbody id="bodyTableField"></tbody>
+         </table>
+      </div>
 
-    <div class="campo">
-    </div>
-    <table id="tableField">
-      <tbody id="bodyTableField"></tbody>
-    </table>
-    <footer>
-    </footer>
-  </body>
+      <div class="history">
+         <table id="tableHistory">
+            <tr>
+               <th>Jogador</th>
+               <th>Dimensões</th>
+               <th>Bombas</th>
+               <th>Tempo (s)</th>
+               <th>Células Abertas</th>
+               <th>Vitória</th>
+            </tr>
+            <tbody id="bodyTableHistory">
+            </tbody>
+         </table>
+      </div>
+      
+      <footer>
+      </footer>
+   </body>
 </html>

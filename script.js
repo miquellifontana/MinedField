@@ -1,9 +1,30 @@
 var field;
 var processingQueue = [];
-var fieldLines = 10;
-var fieldColumns = 10;
-var totalBombs = 10;
 var showBombsMode = false;
+
+var thisGame;
+var gameHistory = new Array();
+
+function Player(name, victories, defeats) {
+  this.name;
+  this.victories;
+  this.defeats;
+}
+
+function GameSettings(fieldLines, fieldColumns, totalBombs, playerName) {
+  this.fieldLines = fieldLines;
+  this.fieldColumns = fieldColumns;
+  this.totalBombs = totalBombs;
+  this.playerName = playerName;
+  this.begin;
+  this.end;
+  this.victory = false;
+  this.openSlots = 0;
+}
+
+function Game() {
+  this.thisGame = null;
+}
 
 function Slot() {
   this.isBomb = false;
@@ -15,20 +36,34 @@ function Slot() {
 }
 
 function reloadGame() {
-  field = new Array(fieldLines);
+  readInfo();
+
+  field = new Array(thisGame.fieldLines);
   fillField();
   setBombs();
   drawField();
+}
+
+function readInfo() {
+  var form = document.forms["form_info"];
+
+  var fieldLines = form["lines"].value;
+  var fieldColumns = form["columns"].value;
+  var totalBombs = form["bombs"].value;
+  var playerName = form["player"].value;
+
+  thisGame = new GameSettings(fieldLines, fieldColumns, totalBombs, playerName);
+  gameHistory.push(thisGame);
 }
 
 /**
  * Popula a matriz do tabuleiro
  */
 function fillField() {
-  for (var i = 0; i < fieldLines; i++) {
-    field[i] = new Array(fieldColumns);
+  for (var i = 0; i < thisGame.fieldLines; i++) {
+    field[i] = new Array(thisGame.fieldColumns);
 
-    for (var j = 0; j < fieldColumns; j++) {
+    for (var j = 0; j < thisGame.fieldColumns; j++) {
       slot = new Slot();
       slot.isBomb = false;
       slot.x = i;
@@ -45,9 +80,9 @@ function fillField() {
 function setBombs() {
   var bombsSetted = 0;
 
-  while (bombsSetted < totalBombs) {
-    var i = getRandomPosition(fieldLines);
-    var j = getRandomPosition(fieldColumns);
+  while (bombsSetted < thisGame.totalBombs) {
+    var i = getRandomPosition(thisGame.fieldLines);
+    var j = getRandomPosition(thisGame.fieldColumns);
     var slot = field[i][j];
 
     if (!slot.isBomb) {
@@ -57,7 +92,7 @@ function setBombs() {
   }
 
   for (var i = 0; i < 10; i++) {
-    if (bombsSetted < totalBombs) {
+    if (bombsSetted < thisGame.totalBombs) {
       var bomb = new Slot();
       bomb.isBomb = true;
       field[i][i] = bomb;
@@ -70,7 +105,8 @@ function setBombs() {
  */
 function getRandomPosition(maxElementsFromMatrix) {
   var maxPosition = maxElementsFromMatrix - 1;
-  var position = (Math.random() * (maxPosition)) + 1;
+  // var position = (-0.3 + Math.random() * (maxPosition)) + 1;
+  var position = ((Math.random() * (maxPosition)) * maxPosition) % maxPosition;
 
   if (position > maxPosition) {
     position = maxPosition;
@@ -88,10 +124,10 @@ function drawField() {
   var tableField = document.getElementById("bodyTableField");
   tableField.innerHTML = "";
 
-  for (var i = 0; i < fieldLines; i++) {
+  for (var i = 0; i < thisGame.fieldLines; i++) {
     var row = tableField.insertRow(i);
 
-    for (var j = 0; j < fieldColumns; j++) {
+    for (var j = 0; j < thisGame.fieldColumns; j++) {
       var slot = field[i][j];
       var cell = row.insertCell(j);
       cell.setAttribute("onclick", "onSlotClicked(" + i + ", " + j + ")");
@@ -118,15 +154,24 @@ function drawField() {
 }
 
 function onSlotClicked(i, j) {
+  if (thisGame.begin == undefined) {
+    thisGame.begin = performance.now();
+
+    alert(thisGame.begin);
+  }
 
   var clickedSlot = field[i][j];
+  if (clickedSlot.isOpen) {
+    return;
+  }
+
   if (clickedSlot.isBomb) {
     youLose();
     showBombs();
   } else {
     processSlot(i, j);
     if (allFieldsProcessed()) {
-      alert("You win");
+      youWin();
     }
   }
 }
@@ -149,13 +194,12 @@ function processQueue() {
     if (!currentPosition.isBomb) {
       currentPosition.bombsAround = numberOfBombsInNeighborhood(currentPosition.x, currentPosition.y);
       if (currentPosition.bombsAround == 0) {
-        //alert("sem bombas em volta");
         var unprocessedNeighboors = getUnprocessedNeighboors(currentPosition.x, currentPosition.y);
-        //alert(unprocessedNeighboors);
         for (var i = 0; i < unprocessedNeighboors.length; i++) {
           var current = unprocessedNeighboors[i];
           current.processed = true;
           current.isOpen = true;
+          thisGame.openSlots++;
           processingQueue.push(current);
         }
       }
@@ -169,8 +213,8 @@ function processQueue() {
 }
 
 function allFieldsProcessed() {
-  for (var i = 0; i < fieldLines; i++) {
-    for (var j = 0; j < fieldColumns; j++) {
+  for (var i = 0; i < thisGame.fieldLines; i++) {
+    for (var j = 0; j < thisGame.fieldColumns; j++) {
       var slot = field[i][j];
       if (!slot.processed && !slot.isBomb) {
         return false;
@@ -178,10 +222,6 @@ function allFieldsProcessed() {
     }
   }
   return true;
-}
-
-function youLose() {
-  alert("Você perdeu");
 }
 
 function getUnprocessedNeighboors(i, j) {
@@ -216,7 +256,7 @@ function numberOfBombsInNeighborhood(i, j) {
 
 function getElementAtPosition(i, j) {
 
-  if (i >= 0 && j >= 0 && i < fieldColumns && j < fieldLines) {
+  if (i >= 0 && j >= 0 && i < thisGame.fieldColumns && j < thisGame.fieldLines) {
     return field[i][j];
   } else {
     return;
@@ -273,8 +313,8 @@ function getNeighboors(i, j) {
 
 function showBombs() {
   showBombsMode = true;
-  for (var i = 0; i < fieldLines; i++) {
-    for (var j = 0; j < fieldColumns; j++) {
+  for (var i = 0; i < thisGame.fieldLines; i++) {
+    for (var j = 0; j < thisGame.fieldColumns; j++) {
       var slot = field[i][j];
       if (!slot.processed) {
         processSlot(i, j);
@@ -283,4 +323,40 @@ function showBombs() {
   }
 
   showBombsMode = false;
+}
+
+
+function youLose() {
+  thisGame.victory = false;
+  endGame();
+  alert("Você perdeu");
+}
+
+function youWin() {
+  thisGame.victory = true;
+  endGame();
+  alert("You win");
+}
+
+function endGame() {
+  thisGame.end = performance.now();
+  alert(thisGame.end);
+  showScore();
+}
+
+function showScore() {
+  var tableHistory = document.getElementById("bodyTableHistory");
+  tableHistory.innerHTML = "";
+
+  for (var i = 0; i < gameHistory.length; i++) {
+    var row = tableHistory.insertRow(i);
+
+    var game = gameHistory[i];
+    row.insertCell(0).innerHTML = game.playerName;
+    row.insertCell(1).innerHTML = game.fieldLines + " X " + game.fieldColumns;
+    row.insertCell(2).innerHTML = game.totalBombs;
+    row.insertCell(3).innerHTML = Math.round(((game.end - game.begin) / 1000) * 100) / 100;
+    row.insertCell(4).innerHTML = game.openSlots;
+    row.insertCell(5).innerHTML = game.victory;
+  }
 }
