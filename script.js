@@ -5,6 +5,9 @@ var showBombsMode = false;
 var thisGame;
 var gameHistory = new Array();
 
+var players = new Array();
+var mapPlayersByName = new Array();
+
 function Player(name, victories, defeats) {
   this.name;
   this.victories;
@@ -20,6 +23,7 @@ function GameSettings(fieldLines, fieldColumns, totalBombs, playerName) {
   this.end;
   this.victory = false;
   this.openSlots = 0;
+  this.player = null;
 }
 
 function Game() {
@@ -52,7 +56,19 @@ function readInfo() {
   var totalBombs = form["bombs"].value;
   var playerName = form["player"].value;
 
+  var thisPlayer = mapPlayersByName[playerName];
+  if (thisPlayer == undefined) {
+    thisPlayer = {
+      name: playerName,
+      victories: 0,
+      defeats: 0
+    };
+    mapPlayersByName[playerName] = thisPlayer;
+    players.push(thisPlayer);
+  }
+
   thisGame = new GameSettings(fieldLines, fieldColumns, totalBombs, playerName);
+  thisGame.player = thisPlayer;
   gameHistory.push(thisGame);
 }
 
@@ -156,8 +172,6 @@ function drawField() {
 function onSlotClicked(i, j) {
   if (thisGame.begin == undefined) {
     thisGame.begin = performance.now();
-
-    alert(thisGame.begin);
   }
 
   var clickedSlot = field[i][j];
@@ -328,23 +342,25 @@ function showBombs() {
 
 function youLose() {
   thisGame.victory = false;
+  thisGame.player.defeats++;
   endGame();
   alert("Você perdeu");
 }
 
 function youWin() {
   thisGame.victory = true;
+  thisGame.player.victories++;
   endGame();
   alert("You win");
 }
 
 function endGame() {
   thisGame.end = performance.now();
-  alert(thisGame.end);
+  showHistory();
   showScore();
 }
 
-function showScore() {
+function showHistory() {
   var tableHistory = document.getElementById("bodyTableHistory");
   tableHistory.innerHTML = "";
 
@@ -358,5 +374,18 @@ function showScore() {
     row.insertCell(3).innerHTML = Math.round(((game.end - game.begin) / 1000) * 100) / 100;
     row.insertCell(4).innerHTML = game.openSlots;
     row.insertCell(5).innerHTML = game.victory;
+  }
+}
+
+function showScore() {
+  var tableScore = document.getElementById("bodyTableScore");
+  tableScore.innerHTML = "";
+  for (var i = 0; i < players.length; i++) {
+    var row = tableScore.insertRow(i);
+
+    var player = players[i];
+    row.insertCell(0).innerHTML = player.name;
+    row.insertCell(1).innerHTML = player.victories;
+    row.insertCell(2).innerHTML = player.defeats;
   }
 }
