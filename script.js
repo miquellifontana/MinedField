@@ -1,6 +1,5 @@
 var field;
 var processingQueue = [];
-var showBombsMode = false;
 
 var thisGame;
 var gameHistory = new Array();
@@ -21,8 +20,8 @@ function GameSettings(fieldLines, fieldColumns, totalBombs, playerName) {
   this.playerName = playerName;
   this.begin;
   this.end;
+  this.ended = false;
   this.victory = false;
-  this.openSlots = 0;
   this.player = null;
 }
 
@@ -33,6 +32,7 @@ function Game() {
 function Slot() {
   this.isBomb = false;
   this.isOpen = false;
+  this.isVisible = false;
   this.processed = false;
   this.bombsAround = 0;
   this.y = null;
@@ -149,19 +149,24 @@ function drawField() {
       cell.setAttribute("onclick", "onSlotClicked(" + i + ", " + j + ")");
 
       if (slot != null) {
-        if (slot.processed) {
+
+        if (slot.isOpen || slot.isVisible) {
           if (slot.bombsAround > 0) {
             cell.innerHTML = slot.bombsAround;
           }
-        }
 
-        if (slot.isOpen) {
           if (slot.isBomb) {
             cell.innerHTML = "Bomb";
             cell.className = "openBomb"
-          } else if (!showBombsMode) {
+          } else {
             cell.className = "openSlot"
           }
+        } else {
+          cell.className = null;
+        }
+
+        if (slot.isVisible && !slot.isBomb && !slot.isOpen) {
+          cell.className = null;
         }
       }
 
@@ -170,6 +175,11 @@ function drawField() {
 }
 
 function onSlotClicked(i, j) {
+  if (thisGame.ended) {
+    alert("Jogo finalizado com " + (thisGame.victory ? "vitória" : "derrota")
+      + ". Favor iniciar um novo jogo.")
+    return;
+  }
   if (thisGame.begin == undefined) {
     thisGame.begin = performance.now();
   }
@@ -181,26 +191,45 @@ function onSlotClicked(i, j) {
 
   if (clickedSlot.isBomb) {
     youLose();
-    showBombs();
+    makeSlotsVisible();
   } else {
-    processSlot(i, j);
-    if (allFieldsProcessed()) {
+    processSlot(i, j, true);
+    if (allSlotsOpen()) {
       youWin();
     }
   }
+
+  drawField();
 }
 
-function processSlot(i, j) {
+/**
+ * Processa o slot da posição especificada da matriz.
+ *
+ * @param i Índice da linha correspondente ao slot na matriz.
+ * @param j Índice da coluna correspondente ao slot na matriz.
+ * @param openSlots flag que indica se será necessário abrir os slots processados.
+ */
+function processSlot(i, j, openSlots) {
   var clickedSlot = field[i][j];
   if (!clickedSlot.processed) {
     clickedSlot.processed = true;
-    clickedSlot.isOpen = true;
+
+    if (openSlots) {
+      clickedSlot.isOpen = true;
+    }
+    processingQueue = new Array();
     processingQueue.push(clickedSlot);
-    processQueue();
+    processQueue(openSlots);
   }
 }
 
-function processQueue() {
+/**
+ * Processa recursivamente os slots que estão na fila de processamento,
+ * adicionando os slots vizinhos à fila caso necessário.
+ *
+ * @param openSlots flag que indica se será necessário abrir os slots processados.
+ */
+function processQueue(openSlots) {
 
   var currentPosition = processingQueue.pop();
 
@@ -212,25 +241,28 @@ function processQueue() {
         for (var i = 0; i < unprocessedNeighboors.length; i++) {
           var current = unprocessedNeighboors[i];
           current.processed = true;
-          current.isOpen = true;
-          thisGame.openSlots++;
+          if (openSlots) {
+            current.isOpen = true;
+          // thisGame.openSlots++;
+          }
           processingQueue.push(current);
         }
       }
     }
 
-    // alert(processingQueue);
-    drawField();
-    processQueue();
+    processQueue(openSlots);
   }
   return;
 }
 
-function allFieldsProcessed() {
+/**
+ * Verifica se todos os slots do jogo foram abertos.
+ */
+function allSlotsOpen() {
   for (var i = 0; i < thisGame.fieldLines; i++) {
     for (var j = 0; j < thisGame.fieldColumns; j++) {
       var slot = field[i][j];
-      if (!slot.processed && !slot.isBomb) {
+      if (!slot.isOpen && !slot.isBomb) {
         return false;
       }
     }
@@ -325,20 +357,48 @@ function getNeighboors(i, j) {
   return neighboors;
 }
 
-function showBombs() {
-  showBombsMode = true;
+/**
+ * Processa e coloca todos os slots não abertos em modo de "Visualização".
+ */
+function makeSlotsVisible() {
+  var processedSlots = new Array();
+
   for (var i = 0; i < thisGame.fieldLines; i++) {
     for (var j = 0; j < thisGame.fieldColumns; j++) {
       var slot = field[i][j];
-      if (!slot.processed) {
-        processSlot(i, j);
+
+      if (!slot.isOpen) {
+        slot.isVisible = true;
+        processSlot(i, j, false);
+        processedSlots.push(slot);
       }
     }
   }
 
-  showBombsMode = false;
+  // "desprocesso" os slots que foram processados durante esta chamada.
+  // Necessário para não interferir no restante do jogo.
+  for (var i = 0; i < processedSlots.length; i++) {
+    processedSlots[i].processed = false;
+  }
+  drawField();
 }
 
+/**
+ * Remove todos os slots do modo de "Visualização".
+ */
+function hideSlots() {
+  for (var i = 0; i < thisGame.fieldLines; i++) {
+    for (var j = 0; j < thisGame.fieldColumns; j++) {
+      var slot = field[i][j];
+      if (slot.isVisible) {
+        slot.isVisible = false;
+        slot.processed = false;
+      }
+    }
+  }
+
+  drawField();
+}
 
 function youLose() {
   thisGame.victory = false;
@@ -351,11 +411,12 @@ function youWin() {
   thisGame.victory = true;
   thisGame.player.victories++;
   endGame();
-  alert("You win");
+  alert("Você Ganhou");
 }
 
 function endGame() {
   thisGame.end = performance.now();
+  thisGame.ended = true;
   showHistory();
   showScore();
 }
@@ -372,7 +433,7 @@ function showHistory() {
     row.insertCell(1).innerHTML = game.fieldLines + " X " + game.fieldColumns;
     row.insertCell(2).innerHTML = game.totalBombs;
     row.insertCell(3).innerHTML = Math.round(((game.end - game.begin) / 1000) * 100) / 100;
-    row.insertCell(4).innerHTML = game.openSlots;
+    row.insertCell(4).innerHTML = 0; //game.openSlots;
     row.insertCell(5).innerHTML = game.victory;
   }
 }
