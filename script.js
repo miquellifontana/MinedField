@@ -18,6 +18,7 @@ function GameSettings(fieldLines, fieldColumns, totalBombs, playerName) {
   this.fieldColumns = fieldColumns;
   this.totalBombs = totalBombs;
   this.playerName = playerName;
+  this.totalSlotsOpened = 0;
   this.begin;
   this.end;
   this.ended = false;
@@ -189,6 +190,7 @@ function onSlotClicked(i, j) {
     return;
   }
 
+  clickedSlot.isOpen = true;
   if (clickedSlot.isBomb) {
     youLose();
     makeSlotsVisible();
@@ -243,7 +245,6 @@ function processQueue(openSlots) {
           current.processed = true;
           if (openSlots) {
             current.isOpen = true;
-          // thisGame.openSlots++;
           }
           processingQueue.push(current);
         }
@@ -417,24 +418,39 @@ function youWin() {
 function endGame() {
   thisGame.end = performance.now();
   thisGame.ended = true;
+  countOpenSlots();
   showHistory();
   showScore();
+}
+
+function countOpenSlots() {
+  for (var i = 0; i < thisGame.fieldLines; i++) {
+    for (var j = 0; j < thisGame.fieldColumns; j++) {
+      var slot = field[i][j];
+      if (slot.isOpen) {
+        thisGame.totalSlotsOpened++;
+      }
+    }
+  }
 }
 
 function showHistory() {
   var tableHistory = document.getElementById("bodyTableHistory");
   tableHistory.innerHTML = "";
 
+  var rowIndex = 0;
   for (var i = 0; i < gameHistory.length; i++) {
-    var row = tableHistory.insertRow(i);
-
     var game = gameHistory[i];
-    row.insertCell(0).innerHTML = game.playerName;
-    row.insertCell(1).innerHTML = game.fieldLines + " X " + game.fieldColumns;
-    row.insertCell(2).innerHTML = game.totalBombs;
-    row.insertCell(3).innerHTML = Math.round(((game.end - game.begin) / 1000) * 100) / 100;
-    row.insertCell(4).innerHTML = 0; //game.openSlots;
-    row.insertCell(5).innerHTML = game.victory;
+    if (game.ended) {
+      var row = tableHistory.insertRow(rowIndex++);
+      row.insertCell(0).innerHTML = game.playerName;
+      row.insertCell(1).innerHTML = game.fieldLines + " X " + game.fieldColumns;
+      row.insertCell(2).innerHTML = game.totalBombs;
+      var tempo = Math.round(((game.end - game.begin) / 1000) * 100) / 100;
+      row.insertCell(3).innerHTML = isNaN(tempo) ? 0 : tempo;
+      row.insertCell(4).innerHTML = game.totalSlotsOpened;
+      row.insertCell(5).innerHTML = game.victory ? "Vitória" : "Derrota";
+    }
   }
 }
 
