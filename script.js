@@ -54,6 +54,27 @@ function readInfo() {
   var fieldLines = form["lines"].value;
   var fieldColumns = form["columns"].value;
   var totalBombs = form["bombs"].value;
+
+  if (fieldLines < 1) {
+    alert("Número de linhas inválido");
+    return;
+  }
+
+  if (fieldColumns < 1) {
+    alert("Número de colunas inválido");
+    return;
+  }
+
+  if (totalBombs < 0) {
+    alert("Número de bombas inválido");
+    return;
+  }
+
+  if ((fieldLines * fieldColumns) < totalBombs) {
+    alert("Quantidade de bombas maior que o tamanho do campo");
+    return;
+  }
+
   var playerName = form["player"].value;
 
   var thisPlayer = mapPlayersByName[playerName];
