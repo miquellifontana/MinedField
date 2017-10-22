@@ -323,8 +323,7 @@ function numberOfBombsInNeighborhood(i, j) {
 }
 
 function getElementAtPosition(i, j) {
-
-  if (i >= 0 && j >= 0 && i < thisGame.fieldColumns && j < thisGame.fieldLines) {
+  if (i >= 0 && j >= 0 && j < thisGame.fieldColumns && i < thisGame.fieldLines) {
     return field[i][j];
   } else {
     return;
