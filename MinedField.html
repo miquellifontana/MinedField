@@ -4,25 +4,43 @@
       <meta charset="UTF-8">
       <link rel="stylesheet" type="text/css" href="Style.css" />
       <script src="script.js"></script>
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
       <title>Mined Field</title>
    </head>
    <body>
-      <header>
-      </header>
-      <div id="infos">
-         <form id="form_info">
-            Linhas: <input type="number" name="lines" value="10"/>
-            Colunas: <input type="number" name="columns" value="10"/>
-            Quantidade de Bombas: <input type="number" name="bombs" value="20"/><br>
-            Seu Nome: <input type="text" name="player" value="Jogador 1"/>
-         </form>
+    <header>
+    </header>
+
+    <div id="modal">
+      <div class="modalconent">
+        <form id="form_info">
+          <h1 class="center campoMinado"> Campo Minado </h1>
+          <p class="p modalText"> Linhas:  <input class=" p modalInput" type="number" name="lines" value="10"/>  </p>
+          <p class="p modalText"> Colunas:  <input class=" p modalInput" type="number" name="columns" value="10"/> </p>
+          <p class="p modalText"> Quantidade de Bombas:  <input class=" p modalInput" type="number" name="bombs" value="20"/> </p>
+          <br>
+          <p class="p modalText center"> Nome do jogador </p>
+          <div class="center"> <input class=" p modalInput" type="text" name="player" value="Jogador 1" /> </div>
+          <br>
+        </form>
+
+        <div class="wrapper">
+          <button class="btn" id="button" onclick="reloadGame()">Jogar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class= "header">
+
+      <div class="buttons">
+        <button class="btn-6d" onclick="openModal()">Novo Jogo</button>
+        <button class="btn-6d" onclick="makeSlotsVisible()">Visualizar Conteúdo</button>
+        <button class="btn-6d" onclick="hideSlots()">Esconder Conteúdo</button>
       </div>
 
-      <div id="buttons">
-         <button onclick="reloadGame()">Novo Jogo</button>
-         <button onclick="makeSlotsVisible()">Visualizar Conteúdo</button>
-         <button onclick="hideSlots()">Esconder Conteúdo</button>
-      </div>
+    </div>
+
+    <div class="body">
 
       <div class="field">
          <table id="tableField">
@@ -42,6 +60,8 @@
         </table>
       </div>
 
+    </div>
+
       <div class="history">
          <table id="tableHistory">
             <tr>
@@ -50,7 +70,7 @@
                <th>Bombas</th>
                <th>Tempo (s)</th>
                <th>Células Abertas</th>
-               <th>Vitória</th>
+               <th>Resultado</th>
             </tr>
             <tbody id="bodyTableHistory">
             </tbody>

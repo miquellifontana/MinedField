@@ -47,6 +47,7 @@ function reloadGame() {
   fillField();
   setBombs();
   drawField();
+  closeModal();
 }
 
 function readInfo() {
@@ -178,7 +179,7 @@ function drawField() {
           }
 
           if (slot.isBomb) {
-            cell.innerHTML = "Bomb";
+            cell.innerHTML = "";
             cell.className = "openBomb"
           } else {
             cell.className = "openSlot"
@@ -323,7 +324,8 @@ function numberOfBombsInNeighborhood(i, j) {
 }
 
 function getElementAtPosition(i, j) {
-  if (i >= 0 && j >= 0 && j < thisGame.fieldColumns && i < thisGame.fieldLines) {
+
+ if (i >= 0 && j >= 0 && j < thisGame.fieldColumns && i < thisGame.fieldLines) {
     return field[i][j];
   } else {
     return;
@@ -485,4 +487,18 @@ function showScore() {
     row.insertCell(1).innerHTML = player.victories;
     row.insertCell(2).innerHTML = player.defeats;
   }
+}
+
+/*
+ * Fecha a tela modal
+ */
+function closeModal(){
+  document.getElementById('modal').style.display = "none";
+}
+
+/*
+ * Abre a tela modal
+ */
+function openModal() {
+  document.getElementById('modal').style.display = "block";
 }

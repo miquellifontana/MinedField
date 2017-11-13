@@ -1,9 +1,30 @@
+body{
+  margin: auto;
+  background-color: #2c3e50;
+  font-family: 'Open Sans', sans-serif;
+}
+
 #tableField td{
-  border: 2px solid #01579B;
   margin: 0px;
   padding: 0px;
-  height: 40px;
-  width: 40px;
+  height: 45px;
+  width: 45px;
+  font-family:Arial, "Helvetica", sans-serif;
+  font-size:20px;
+  font-weight:bold;
+  color:#000000;
+  text-transform:uppercase;
+  text-align:center;
+  text-shadow:1px 0px 0px #07526e;
+  position:relative;
+  cursor:pointer;
+  border: none;
+  background: #109bce;
+  border-radius: 2px;
+}
+
+table{
+  border-spacing: 5px;
 }
 
 #tableField td:hover{
@@ -11,12 +32,19 @@
 }
 
 #tableField td.openSlot{
-  background-color: #a5a5a5;
+  background-color: #FFFFFF;
 }
 
 #tableField td.openBomb{
-  /*background-image: ;*/
-  background-color: #ff0000;
+  background-image: url("IMG/bomb.png");;
+  background-color: #CF000F;
+}
+
+div.history table {
+  margin-right: auto;
+  margin-left: auto;
+  border-radius: 5px;
+  opacity: 0.8;
 }
 
 #tableHistory{
@@ -24,12 +52,9 @@
   background-color: #fff;
   border-spacing: 0px;
   border-collapse: collapse;
-  width: 100%;
+  width: 90%;
 }
-/*
-#tableHistory tr:nth-child(even) {
-  background-color: #f2f2f2
-}*/
+
 th {
   text-align: center;
   font-weight: bold;
@@ -41,24 +66,206 @@ th {
   border-bottom: 1px solid #ddd;
 }
 
-div.field{
+#tableScore td{
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  border-color: #109bce;
+}
+
+
+div.field {
   float: left;
   padding: 0px;
   padding-top: 10px;
+  text-align: center;
+  width: 70%;
+  margin-bottom: 50px;
+}
+
+div.field table {
+  margin-right: auto;
+  margin-left: auto;
 }
 
 div.score{
   padding: 10px;
+  width: 27%;
+  float: right;
+}
+
+div.tempo {
+  float: left;
+  padding: 0px;
+  padding-top: 10px;
+  text-align: center;
+  width: 65%;
+  margin-bottom: 30px;
+}
+
+div.buttons table {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+div.buttons{
+  padding: 10px;
+  width: 30%;
+  float: right;
 }
 
 div.history{
   padding-top: 10px;
 }
-/*
-tr {
-  height: 40px;
+
+#modal {
+    position: fixed;
+    font-family: Arial, Helvetica, sans-serif;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 99999;
+    height: 100%;
+    width: 100%;
+}
+.modalconent {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    width: 50%;
+    padding: 20px;
+    background: #ecf0f1;
+    border-radius: 10px;
 }
 
-td {
-  width: 40px;
-}*/
+.modalText{
+  color: #2c3e50;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.modalInput{
+  border: 0px;
+  border-bottom: 1px solid  #2c3e50;
+  font-family: 'Open Sans', sans-serif;
+  align-content: flex-end;
+}
+
+.campoMinado{
+  color: #2c3e50;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.center{
+  text-align: center;
+}
+.right{
+  text-align: right;
+}
+
+.p{
+  text-align: center;
+}
+
+.wrapper {
+    text-align: center;
+}
+
+.button {
+    position: absolute;
+    top: 50%;
+}
+
+.btn{
+  background: #2c3e50;
+  width: 100px;
+  height: 40px;
+  border-radius: 1px;
+  border: 1px solid #3498db;
+  color: #ecf0f1;
+  border-color: #2c3e50;
+  border-radius: 10px;
+}
+
+.btn:hover{
+  background: #ecf0f1;
+  color: #2c3e50;
+}
+
+.buttons{
+  text-align: right;
+}
+
+.btn-6d {
+  font-weight:bold;
+  color:#109bce;
+  text-align:center;
+  height: 35px;
+  padding-right: 10px;
+  padding-left: 10px;
+  border-radius: 5px;
+  border: 1px solid #109bce;
+  background-color: transparent;
+}
+
+.btn-6d:hover {
+  background: #109bce;
+  color: #2c3e50 ;
+}
+
+.buttons{
+  padding-top: 10px;
+  padding-right: 15px;
+  padding-bottom: 10px;
+}
+
+img.clock{
+  width: 30px;
+  height: 30px;
+}
+
+img.bomb{
+  width: 35px;
+  height: 35px;
+}
+
+#tableScore th{
+  font-family:Arial, "Helvetica", sans-serif;
+  font-size:16px;
+  font-weight:bold;
+  color:#FFFFFF;
+  text-transform:uppercase;
+  text-align:center;
+  text-shadow:1px 0px 0px #07526e;
+  padding-left: 10px;
+  padding-top: 10px;
+}
+
+#tableScore td{
+  text-align: center;
+  color: #FFFFFF;
+}
+
+#tableHistory th{
+  font-family:Arial, "Helvetica", sans-serif;
+  font-size:15px;
+  font-weight:bold;
+  color:#2c3e50;
+  text-transform:uppercase;
+  text-align:center;
+  text-shadow:1px 0px 0px #07526e;
+  padding-left: 10px;
+  padding-top: 10px;
+}
+
+#tableHistory td{
+  text-align: center;
+  color: #000000;
+}
+
+
+
+footer{
+  height: 20px;
+}
